@@ -85,7 +85,7 @@ def main(testing_model=False, display_images=False):
     batch_size = 50
     z_dimensions = 100
     learning_rate = 0.0001
-    epochs = 500000
+    epochs = 50001
 
     x_placeholder = tf.placeholder("float", shape=[None, 28, 28, 1], name='r_placeholder')
 
@@ -111,11 +111,18 @@ def main(testing_model=False, display_images=False):
 
     saver = tf.train.Saver()
     if testing_model:
-        pass
+        saver.restore(sess, "saves/model.ckpt-45000")
+        images = sess.run(generator(3, z_dimensions))
+        discriminator_prediction = sess.run(discriminator(x_placeholder), {x_placeholder: images})
+        for j in range(3):
+            print("Discriminator result: ", discriminator_prediction[j][0])
+            img = images[j, :, :, 0]
+            plt.imshow(img.reshape([28, 28]), cmap='Greys')
+            plt.show()
 
     else:
         """running the session"""
-
+        saver.restore(sess, "saves/model.ckpt-45000")
         sess.run(tf.global_variables_initializer())
         saver.restore(sess, "saves/model.ckpt-45000")
         generator_loss = 0
@@ -140,15 +147,12 @@ def main(testing_model=False, display_images=False):
                     sess.run([d_trainer_real, d_loss_fake, d_loss_real, g_loss], {x_placeholder: real_image_batch})
                 d_real_count += 1
 
-            if i%10 == 0:
-                real_image_batch = mnist.train.next_batch(batch_size)[0].reshape([batch_size, 28, 28, 1])
-                g_count, d_real_count, d_fake_count = 0, 0, 0
-
             if i%100 == 0:
-                print("\n\nEpoch:", i)
-                print("g:",g_count)
-                print("dr:",d_real_count)
-                print("df:",d_fake_count)
+                real_image_batch = mnist.train.next_batch(batch_size)[0].reshape([batch_size, 28, 28, 1])
+                print("Epoch:", i)
+                print("gcount", g_count)
+                print("d_real_count", d_real_count)
+                print("d_fake_count", d_fake_count)
                 g_count, d_real_count, d_fake_count = 0, 0, 0
 
             if i%20000 == 0:
@@ -164,5 +168,5 @@ def main(testing_model=False, display_images=False):
 
 
 if __name__ == '__main__':
-    main()
+    main(testing_model=False, display_images=False)
 
