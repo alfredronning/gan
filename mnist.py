@@ -85,7 +85,7 @@ def main(testing_model=False, display_images=False):
     batch_size = 50
     z_dimensions = 100
     learning_rate = 0.0001
-    epochs = 50000
+    epochs = 500000
 
     x_placeholder = tf.placeholder("float", shape=[None, 28, 28, 1], name='r_placeholder')
 
@@ -117,7 +117,7 @@ def main(testing_model=False, display_images=False):
         """running the session"""
 
         sess.run(tf.global_variables_initializer())
-
+        saver.restore(sess, "saves/model.ckpt-45000")
         generator_loss = 0
         discriminator_loss_real, discriminator_loss_fake = 1, 1
 
@@ -151,7 +151,7 @@ def main(testing_model=False, display_images=False):
                 print("df:",d_fake_count)
                 g_count, d_real_count, d_fake_count = 0, 0, 0
 
-            if i%5000 == 0:
+            if i%20000 == 0:
                 saver.save(sess, 'saves/model.ckpt', global_step=i)
                 if display_images:
                     images = sess.run(generator(3, z_dimensions))
