@@ -145,7 +145,11 @@ def main(testing_model=False, display_images=False):
                 g_count, d_real_count, d_fake_count = 0, 0, 0
 
             if i%100 == 0:
-                print("Epoch:", i)
+                print("\n\nEpoch:", i)
+		print("g:",g_count)
+		print("dr:",d_real_count)
+		print("df:",d_fake_count)
+		g_count, d_real_count, d_fake_count = 0, 0, 0
 
             if i%5000 == 0:
                 saver.save(sess, 'saves/model.ckpt', global_step=i)
